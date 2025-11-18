@@ -1,14 +1,13 @@
-namespace SpriteKind {
-    export const arbol = SpriteKind.create()
-    export const teleport = SpriteKind.create()
-    export const comercial = SpriteKind.create()
-}
+@namespace
+class SpriteKind:
+    arbol = SpriteKind.create()
+    teleport = SpriteKind.create()
+    comercial = SpriteKind.create()
 
-function partePrincipal() {
-    let x: number;
-    let y: number;
-    
-    personajePrincipal = sprites.create(img`
+
+def partePrincipal():
+    global personajePrincipal, fons_bosc
+    personajePrincipal = sprites.create(img("""
             . . . . . . . c c c . . . . . .
             . . . . . . c b 5 c . . . . . .
             . . . . c c c 5 5 c c c . . . .
@@ -25,11 +24,12 @@ function partePrincipal() {
             . . e e f 5 5 5 5 5 5 f e e . .
             . . . . c b 5 5 5 5 b c . . . .
             . . . . . f f f f f f . . . . .
-            `, SpriteKind.Player)
-    controller.moveSprite(personajePrincipal)
-    personajePrincipal.setStayInScreen(false)
-    scene.cameraFollowSprite(personajePrincipal)
-    sprites.create(img`
+            """),
+        SpriteKind.player)
+    controller.move_sprite(personajePrincipal)
+    personajePrincipal.set_stay_in_screen(False)
+    scene.camera_follow_sprite(personajePrincipal)
+    sprites.create(img("""
             ....................e2e33e2e....................
             .................222eee33e2e222.................
             ..............222e22e2e33eee22e222..............
@@ -78,120 +78,112 @@ function partePrincipal() {
             ....644444444c66f4e44e44e44e44ee66c444444446....
             .....64eee444c66f4e44e44e44e44ee66c444eee46.....
             ......6ccc666c66e4e44e44e44e44ee66c666ccc6......
-            `, SpriteKind.teleport).setPosition(-20, -20)
-    info.setScore(0)
+            """),
+        SpriteKind.teleport).set_position(-20, -20)
+    info.set_score(0)
     fons_bosc = image.create(160, 120)
     fons_bosc.fill(7)
-    scene.setBackgroundImage(fons_bosc)
-    for (let i = 0; i < 21; i++) {
-        //  filas
-        for (let j = 0; j < 21; j++) {
-            //  columnas
+    scene.set_background_image(fons_bosc)
+    for i in range(21):
+        # filas
+        for j in range(21):
+            # columnas
             x = 20 + j * 30
             y = 20 + i * 50
-            sprites.create(assets.image`
+            sprites.create(assets.image("""
                 arbol
-                `, SpriteKind.arbol).setPosition(x, y)
-        }
-    }
-}
-
-function gestionar_mercat() {
-    let opcio: number;
-    let quantitat: number;
-    let quilograms_llenya: number;
-    let producte_nom: string;
-    let ratio: number;
-    let resultat_final: number;
-    //  Bucle del menú principal
-    while (true) {
-        game.showLongText("" + "LLISTA DE PREUS:\n" + `
+                """), SpriteKind.arbol).set_position(x, y)
+def gestionar_mercat():
+    # Bucle del menú principal
+    while True:
+        game.show_long_text("" + "LLISTA DE PREUS:\n" + """
                 1. Gallina (6kg llenya)
-                ` + `
+                """ + """
                 2. Patata (Variable)
-                ` + `
+                """ + """
                 3. Cabra (5kg llenya)
-                ` + `
+                """ + """
                 4. Ous (3kg/dotzena)
-                ` + `
+                """ + """
                 5. Cavall (12kg llenya)
-                ` + "6. Sortir\n" + "(Prem A per triar)", DialogLayout.Full)
-        opcio = game.askForNumber("Escriu el número de l'opció:", 1)
-        if (opcio == 6) {
-            game.showLongText("Adéu! ", DialogLayout.Bottom)
+                """ + "6. Sortir\n" + "(Prem A per triar)",
+            DialogLayout.FULL)
+        opcio = game.ask_for_number("Escriu el número de l'opció:", 1)
+        if opcio == 6:
+            game.show_long_text("Adéu! ", DialogLayout.BOTTOM)
             break
-        }
-        
-        if (opcio < 1 || opcio > 6) {
-            game.showLongText("Opció no vàlida. No venem targetes RTX 5090 jejeje", DialogLayout.Bottom)
+        if opcio < 1 or opcio > 6:
+            game.show_long_text("Opció no vàlida. No venem targetes RTX 5090 jejeje",
+                DialogLayout.BOTTOM)
             continue
-        }
-        
-        quantitat = game.askForNumber("Quantes unitats")
-        //  1. Control de negatius
-        if (quantitat < 0) {
-            game.showLongText("El numero ha de ser positiu", DialogLayout.Bottom)
+        quantitat = game.ask_for_number("Quantes unitats")
+        # 1. Control de negatius
+        if quantitat < 0:
+            game.show_long_text("El numero ha de ser positiu",
+                DialogLayout.BOTTOM)
             continue
-        }
-        
-        //  2. Control de zero
-        if (quantitat == 0) {
-            game.showLongText("adeu", DialogLayout.Bottom)
+        # 2. Control de zero
+        if quantitat == 0:
+            game.show_long_text("adeu",
+                DialogLayout.BOTTOM)
             continue
-        }
-        
-        //  3. Control d'animals sencers (Gallina, Cabra, Cavall, Ous)
-        //  Si la quantitat té decimals (ex: 1.5), el residu de dividir per 1 no és 0.
-        if ((opcio == 1 || opcio == 3 || opcio == 5 || opcio == 4) && quantitat % 1 != 0) {
-            game.showLongText("ERROR CRÍTIC: nomes venem animals sencers", DialogLayout.Bottom)
+        # 3. Control d'animals sencers (Gallina, Cabra, Cavall, Ous)
+        # Si la quantitat té decimals (ex: 1.5), el residu de dividir per 1 no és 0.
+        if (opcio == 1 or opcio == 3 or opcio == 5 or opcio == 4) and quantitat % 1 != 0:
+            game.show_long_text("ERROR CRÍTIC: nomes venem animals sencers",
+                DialogLayout.BOTTOM)
             continue
-        }
-        
-        //  --- CÀLCUL DE LA LLENYA ---
+        # --- CÀLCUL DE LA LLENYA ---
         quilograms_llenya = 0
         producte_nom = ""
-        if (opcio == 1) {
-            //  Gallina
-            //  1 Gallina = 6 kg
+        if opcio == 1:
+            # Gallina
+            # 1 Gallina = 6 kg
             quilograms_llenya = quantitat * 6
             producte_nom = "Gallines"
-        } else if (opcio == 2) {
-            //  Patata
-            //  2 kg llenya = 1.5 kg patata -> 1 kg patata = 2/1.5 kg llenya
-            //  Ràtio: 1.3333...
+        elif opcio == 2:
+            # Patata
+            # 2 kg llenya = 1.5 kg patata -> 1 kg patata = 2/1.5 kg llenya
+            # Ràtio: 1.3333...
             ratio = 2 / 1.5
             quilograms_llenya = quantitat * ratio
             producte_nom = "Kg de Patata"
-        } else if (opcio == 3) {
-            //  Cabra
-            //  1 Cabra = 5 kg
+        elif opcio == 3:
+            # Cabra
+            # 1 Cabra = 5 kg
             quilograms_llenya = quantitat * 5
             producte_nom = "Cabres"
-        } else if (opcio == 4) {
+        elif opcio == 4:
+         
             quilograms_llenya = quantitat * 0.25
             producte_nom = "Ous"
-        } else if (opcio == 5) {
+        elif opcio == 5:
+            
             quilograms_llenya = quantitat * 12
             producte_nom = "Cavalls"
-        }
-        
+       
         resultat_final = Math.round(quilograms_llenya * 100) / 100
-        game.showLongText("Per " + ("" + ("" + quantitat)) + " " + producte_nom + "\nNecessites: " + ("" + ("" + resultat_final)) + " Kg de llenya de pi.", DialogLayout.Bottom)
-    }
-}
+      
+        game.show_long_text("Per " + ("" + str(quantitat)) + " " + producte_nom + "\nNecessites: " + ("" + str(resultat_final)) + " Kg de llenya de pi.",
+            DialogLayout.BOTTOM)
 
-sprites.onOverlap(SpriteKind.Player, SpriteKind.comercial, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
-    zonaComercial.sayText("A: Mercat", 100, false)
-    if (controller.A.isPressed()) {
+
+def on_on_overlap(sprite, otherSprite):
+   
+    zonaComercial.say_text("A: Mercat", 100, False)
+    
+    if controller.A.is_pressed():
         gestionar_mercat()
-    }
-    
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.teleport, function on_on_overlap2(sprite2: Sprite, otherSprite2: Sprite) {
-    
-    personajePrincipal.sayText("A: Entrar", 100, false)
-    if (controller.A.isPressed()) {
-        scene.setBackgroundImage(img`
+sprites.on_overlap(SpriteKind.player, SpriteKind.comercial, on_on_overlap)
+
+
+
+def on_on_overlap2(sprite2, otherSprite2):
+    global zonaComercial
+    personajePrincipal.say_text("A: Entrar", 100, False)
+    if controller.A.is_pressed():
+      
+        scene.set_background_image(img("""
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44444e444e4444444eeeeeeeeeeeeee4beeeeeeeeeeeeeeee..
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44444e444e4444444eeeeeeeee444444beeeeeeeeeeeeeeee..
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44444e444e4444444eeeeeeeee444444beeeeeeeeeeeeeeee..
@@ -311,11 +303,12 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.teleport, function on_on_overlap
             bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb....
             bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb....
             bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb....
-            `)
-        scene.centerCameraAt(0, 0)
-        sprites.destroyAllSpritesOfKind(SpriteKind.teleport)
-        sprites.destroyAllSpritesOfKind(SpriteKind.arbol)
-        zonaComercial = sprites.create(img`
+            """))
+        scene.center_camera_at(0, 0)
+        sprites.destroy_all_sprites_of_kind(SpriteKind.teleport)
+        sprites.destroy_all_sprites_of_kind(SpriteKind.arbol)
+     
+        zonaComercial = sprites.create(img("""
                 .......ffffffffffffffffff.......
                 ......ffeeeeeeeeeeeeeeeeff......
                 .....ffeeeeeeeeeeeeeeeeeeff.....
@@ -348,13 +341,14 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.teleport, function on_on_overlap
                 cccccccccccccccccccccccccccccccc
                 .cccccccccccccccccccccccccccccc.
                 ..cccccccccccccccccccccccccccc..
-                `, SpriteKind.comercial)
-        zonaComercial.setPosition(personajePrincipal.x + 30, personajePrincipal.y)
-    }
-    
-})
-let zonaComercial : Sprite = null
-let fons_bosc : Image = null
-let personajePrincipal : Sprite = null
-//  Execució inicial
+                """),
+            SpriteKind.comercial)
+        
+        zonaComercial.set_position(personajePrincipal.x + 30, personajePrincipal.y)
+sprites.on_overlap(SpriteKind.player, SpriteKind.teleport, on_on_overlap2)
+
+zonaComercial: Sprite = None
+fons_bosc: Image = None
+personajePrincipal: Sprite = None
+# Execució inicial
 partePrincipal()
